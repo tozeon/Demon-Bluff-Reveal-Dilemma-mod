@@ -55,7 +55,7 @@ public class Saboteur : Role
 
     public override string Description
     {
-        get => "[After you reveal me, you take 4 damage. I give random info.]";
+        get => "[When you reveal me, I kill the next character you reveal who has an ability. I give disguise.";
     }
 
     public override void Act(ETriggerPhase trigger, Character charRef)

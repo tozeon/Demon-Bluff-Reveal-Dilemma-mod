@@ -13,13 +13,14 @@ using UnityEngine;
 using RevealDilemmaMod;
 
 using static Il2Cpp.GameplayEvents;
+using UnityEngine.UIElements;
 
 [assembly: MelonInfo(typeof(Core), "RevealDilemmaMod", "0.1.0", "tulxoro", null)]
 [assembly: MelonGame("UmiArt", "Demon Bluff")]
 
 namespace RevealDilemmaMod;
 
-    public class Core : MelonMod
+public class Core : MelonMod
 {
     public override void OnInitializeMelon()
     {
@@ -58,15 +59,15 @@ namespace RevealDilemmaMod;
         CharacterData saboteur = new CharacterData();
         saboteur.role = new Saboteur();
         saboteur.name = "Saboteur";
-        saboteur.description = "After you reveal me, you take 4 damage. I give random info.";
-        saboteur.flavorText = "\"It was an accident! I swear!\"";
-        saboteur.hints = "";
+        saboteur.description = "When you reveal me, I kill the next character you reveal who has an ability. I give disguise.";
+        saboteur.flavorText = "\"Looking for any excuse to achieve their goals.\"";
+        saboteur.hints = "I can still kill after I die.";
         saboteur.ifLies = "";
         saboteur.picking = false;
         saboteur.startingAlignment = EAlignment.Good;
         saboteur.type = ECharacterType.Outcast;
         saboteur.abilityUsage = EAbilityUsage.Once;
-        saboteur.bluffable = true;
+        saboteur.bluffable = false;
         saboteur.characterId = "sabo_rdm";
         // saboteur.art = jesterArt;
         saboteur.artBgColor = new Color(0.3679f, 0.2014f, 0.1541f);
@@ -78,7 +79,7 @@ namespace RevealDilemmaMod;
         CharacterData shroud = new CharacterData();
         shroud.role = new Shroud();
         shroud.name = "Shroud";
-        shroud.description = "After you reveal a character, I deal 1 damage to you. \n\nI Lie and Disguise.";
+        shroud.description = "When you reveal a character, I deal 1 damage to you. \n\nI Lie and Disguise.";
         shroud.flavorText = "\"Awaiting in the darkness, the shroud lurks.\"";
         shroud.hints = "";
         shroud.ifLies = "";
@@ -120,20 +121,20 @@ namespace RevealDilemmaMod;
 
         AscensionsData advancedAscension = gameData.advancedAscension;
 
-        
+
         CustomScriptData shroudScriptData = new CustomScriptData();
         shroudScriptData.name = "Shroud1";
         ScriptInfo shroudScript = new ScriptInfo();
-        
+
         Il2CppSystem.Collections.Generic.List<CharacterData> shroudMustInclude = new Il2CppSystem.Collections.Generic.List<CharacterData>();
         shroudMustInclude.Add(shroud);
         shroudMustInclude.Add(auditor);
         shroudScript.mustInclude = shroudMustInclude;
-        
+
         Il2CppSystem.Collections.Generic.List<CharacterData> shroudDemonList = new Il2CppSystem.Collections.Generic.List<CharacterData>();
         shroudDemonList.Add(shroud);
         shroudScript.startingDemons = shroudDemonList;
-        
+
         Il2CppSystem.Collections.Generic.List<CharacterData> shroudTownsfolkList = new Il2CppSystem.Collections.Generic.List<CharacterData>(ProjectContext.Instance.gameData.advancedAscension.possibleScriptsData[0].scriptInfo.startingTownsfolks.Pointer);
         shroudTownsfolkList.Add(auditor);
         shroudScript.startingTownsfolks = shroudTownsfolkList;
@@ -193,30 +194,50 @@ namespace RevealDilemmaMod;
     private void OnCharacterRevealed(Character revealed)
     {
 
-        CharacterData charData = revealed.dataRef;
+        CharacterData trueChar = revealed.dataRef;
+        CharacterData bluffChar = revealed.bluff;
 
         Il2CppSystem.Collections.Generic.List<Character> allChars = new Il2CppSystem.Collections.Generic.List<Character>(Gameplay.CurrentCharacters.Pointer);
-        
+
         bool shroudIsAlive = false;
+        bool canSabotage = false;
         for (int i = 0; i < allChars.Count; i++)
         {
             if (allChars[i].dataRef.characterId == "shroud_rdm" && allChars[i].state != ECharacterState.Dead)
             {
                 shroudIsAlive = true;
                 break;
+            } else if (trueChar.characterId == "sabo_rdm" && allChars[i].state == ECharacterState.Alive)
+            {
+                canSabotage = true;
             }
+
         }
-        
+
+        if (canSabotage && (trueChar.picking || (bluffChar != null && bluffChar.picking))) {
+            trueChar.picking = false;
+            if (bluffChar != null)
+            {
+                bluffChar.picking = false;
+            }
+            revealed.Kill();
+        }
+
         if (shroudIsAlive)
         {
             PlayerController.PlayerInfo.health.Damage(1);
+            if (PlayerController.PlayerInfo.health.value.GetValue() <= 0)
+            {
+                // kill revealed character to force player to die
+                trueChar.picking = false;
+                if (bluffChar != null)
+                {
+                    trueChar.picking = false;
+                }
+                revealed.Kill();
+            }
         }
 
-        if (charData.characterId == "sabo_rdm")
-        {
-            PlayerController.PlayerInfo.health.Damage(4);
-        }
-    
     }
 
 
