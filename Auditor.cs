@@ -1,21 +1,9 @@
 
 using Il2Cpp;
-using Il2CppFIMSpace.Basics;
-using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Injection;
 using Il2CppInterop.Runtime.InteropTypes;
-using Il2CppSystem;
-using Il2CppSystem.Collections.Generic;
 using MelonLoader;
-using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Xml.Linq;
 using UnityEngine;
-using RevealDilemmaMod;
-using System.ComponentModel.Design;
-using static Il2CppSystem.Globalization.CultureInfo;
-using static MelonLoader.MelonLaunchOptions;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 namespace RevealDilemmaMod;
@@ -30,7 +18,7 @@ public class Auditor : Role
 
     }
 
-    public Auditor(System.IntPtr ptr) : base(ptr)
+    public Auditor(IntPtr ptr) : base(ptr)
     {
 
     }
