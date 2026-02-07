@@ -331,6 +331,7 @@
 
 	<ItemGroup>
 		<Compile Include="Auditor.cs" />
+		<Compile Include="CharacterRegistry.cs" />
 		<Compile Include="Saboteur.cs" />
 		<Compile Include="Shroud.cs" />
 		<Compile Include="Core.cs" />

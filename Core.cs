@@ -1,241 +1,108 @@
 ﻿using Il2Cpp;
-using Il2CppInterop.Runtime.Injection;
 
-using Il2CppDissolveExample;
-using Il2CppInterop.Runtime;
-
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using Il2CppSystem.IO;
 using MelonLoader;
-using System;
-using UnityEngine;
+
 
 using RevealDilemmaMod;
 
 using static Il2Cpp.GameplayEvents;
-using UnityEngine.UIElements;
 
-[assembly: MelonInfo(typeof(Core), "RevealDilemmaMod", "0.1.0", "tulxoro", null)]
+
+[assembly: MelonInfo(typeof(Core), "RevealDilemmaMod", "1.2.0", "tozeon", null)]
 [assembly: MelonGame("UmiArt", "Demon Bluff")]
 
 namespace RevealDilemmaMod;
 
 public class Core : MelonMod
 {
+
+    // Temp flag variables needed by the mod
+    private bool hasSabo = false;
+    private bool canSabo = false;
+    private bool shroudCanKill = false;
+
     public override void OnInitializeMelon()
     {
-        ClassInjector.RegisterTypeInIl2Cpp<Saboteur>();
-        ClassInjector.RegisterTypeInIl2Cpp<Shroud>();
-        ClassInjector.RegisterTypeInIl2Cpp<Auditor>();
+        CharacterRegistry.injectCharacters();
 
     }
 
     public override void OnLateInitializeMelon()
     {
 
-        Il2Cpp.GameData gameData = ProjectContext.Instance.gameData;
-        Il2CppSystem.Collections.Generic.List<CharacterData> allCharacters = gameData.allCharacterData;
-
-        // Sprite alchemistArt = null;
-        // Sprite jesterArt = null;
-        // Sprite wretchArt = null;
-        // foreach (CharacterData character in allCharacters)
-        // {
-        //     MelonLogger.Msg(character.characterId);
-        //     if (character.characterId == "Alchemist_94446803")
-        //     {
-        //         alchemistArt = character.art;
-        //     }
-        //     if (character.characterId == "Wretch_Evil_91222191")
-        //     {
-        //         wretchArt = character.art;
-        //     }
-        //     if (character.characterId == "Jester_41367606")
-        //     {
-        //         jesterArt = character.art;
-        //     }
-        // }
-
-        CharacterData saboteur = new CharacterData();
-        saboteur.role = new Saboteur();
-        saboteur.name = "Saboteur";
-        saboteur.description = "When you reveal me, I kill the next character you reveal who has an ability. I give disguise.";
-        saboteur.flavorText = "\"Looking for any excuse to achieve their goals.\"";
-        saboteur.hints = "I can still kill after I die.";
-        saboteur.ifLies = "";
-        saboteur.picking = false;
-        saboteur.startingAlignment = EAlignment.Good;
-        saboteur.type = ECharacterType.Outcast;
-        saboteur.abilityUsage = EAbilityUsage.Once;
-        saboteur.bluffable = false;
-        saboteur.characterId = "sabo_rdm";
-        // saboteur.art = jesterArt;
-        saboteur.artBgColor = new Color(0.3679f, 0.2014f, 0.1541f);
-        saboteur.cardBgColor = new Color(0.102f, 0.0667f, 0.0392f);
-        saboteur.cardBorderColor = new Color(0.7843f, 0.6471f, 0f);
-        saboteur.color = new Color(0.9659f, 1f, 0.4472f);
-
-
-        CharacterData shroud = new CharacterData();
-        shroud.role = new Shroud();
-        shroud.name = "Shroud";
-        shroud.description = "When you reveal a character, I deal 1 damage to you. \n\nI Lie and Disguise.";
-        shroud.flavorText = "\"Awaiting in the darkness, the shroud lurks.\"";
-        shroud.hints = "";
-        shroud.ifLies = "";
-        shroud.picking = false;
-        shroud.startingAlignment = EAlignment.Evil;
-        shroud.type = ECharacterType.Demon;
-        shroud.abilityUsage = EAbilityUsage.Once;
-        shroud.bluffable = false;
-        shroud.characterId = "shroud_rdm";
-        // shroud.art = wretchArt;
-        shroud.artBgColor = new Color(1f, 0f, 0f);
-        shroud.cardBgColor = new Color(0.0941f, 0.0431f, 0.0431f);
-        shroud.cardBorderColor = new Color(0.8208f, 0f, 0.0241f);
-        shroud.color = new Color(1f, 0.3811f, 0.3811f);
-
-        CharacterData auditor = new CharacterData();
-        auditor.role = new Auditor();
-        auditor.name = "Auditor";
-        auditor.description = "Pick 2 characters. Heal 2 for each Villager you selected.";
-        auditor.flavorText = "\"Verifying the legitimacy of the village.\"";
-        auditor.hints = "I Register as a random Outsider.";
-        auditor.ifLies = "I never heal you.";
-        auditor.picking = true;
-        auditor.startingAlignment = EAlignment.Good;
-        auditor.type = ECharacterType.Villager;
-        auditor.abilityUsage = EAbilityUsage.Once;
-        auditor.bluffable = true;
-        auditor.characterId = "auditor_rdm";
-        // auditor.art = alchemistArt;
-        auditor.artBgColor = new Color(0.111f, 0.0833f, 0.1415f);
-        auditor.cardBgColor = new Color(0.26f, 0.1519f, 0.3396f);
-        auditor.cardBorderColor = new Color(0.7133f, 0.339f, 0.8679f);
-        auditor.color = new Color(1f, 0.935f, 0.7302f);
-
-        allCharacters.Add(shroud);
-        allCharacters.Add(saboteur);
-        allCharacters.Add(auditor);
-
-
-        AscensionsData advancedAscension = gameData.advancedAscension;
-
-
-        CustomScriptData shroudScriptData = new CustomScriptData();
-        shroudScriptData.name = "Shroud1";
-        ScriptInfo shroudScript = new ScriptInfo();
-
-        Il2CppSystem.Collections.Generic.List<CharacterData> shroudMustInclude = new Il2CppSystem.Collections.Generic.List<CharacterData>();
-        shroudMustInclude.Add(shroud);
-        shroudMustInclude.Add(auditor);
-        shroudScript.mustInclude = shroudMustInclude;
-
-        Il2CppSystem.Collections.Generic.List<CharacterData> shroudDemonList = new Il2CppSystem.Collections.Generic.List<CharacterData>();
-        shroudDemonList.Add(shroud);
-        shroudScript.startingDemons = shroudDemonList;
-
-        Il2CppSystem.Collections.Generic.List<CharacterData> shroudTownsfolkList = new Il2CppSystem.Collections.Generic.List<CharacterData>(ProjectContext.Instance.gameData.advancedAscension.possibleScriptsData[0].scriptInfo.startingTownsfolks.Pointer);
-        shroudTownsfolkList.Add(auditor);
-        shroudScript.startingTownsfolks = shroudTownsfolkList;
-        shroudScript.startingOutsiders = ProjectContext.Instance.gameData.advancedAscension.possibleScriptsData[0].scriptInfo.startingOutsiders;
-        shroudScript.startingMinions = ProjectContext.Instance.gameData.advancedAscension.possibleScriptsData[0].scriptInfo.startingMinions;
-        // CharactersCount shroudCounter1 = new CharactersCount(7, 4, 1, 1, 1);
-        // shroudCounter1.dOuts = shroudCounter1.outs + 1;
-        // CharactersCount shroudCounter2 = new CharactersCount(8, 5, 1, 1, 1);
-        // shroudCounter2.dOuts = shroudCounter2.outs + 1;
-        // CharactersCount shroudCounter3 = new CharactersCount(9, 5, 1, 2, 1);
-        // shroudCounter3.dOuts = shroudCounter3.outs + 1;
-        CharactersCount shroudCounter4 = new CharactersCount(10, 6, 1, 1, 2);
-        shroudCounter4.dOuts = shroudCounter4.outs + 1;
-        Il2CppSystem.Collections.Generic.List<CharactersCount> shroudCounterList = new Il2CppSystem.Collections.Generic.List<CharactersCount>();
-        // shroudCounterList.Add(shroudCounter1);
-        // shroudCounterList.Add(shroudCounter2);
-        // shroudCounterList.Add(shroudCounter3);
-        shroudCounterList.Add(shroudCounter4);
-        shroudScript.characterCounts = shroudCounterList;
-        shroudScriptData.scriptInfo = shroudScript;
-
-
-        Il2CppReferenceArray<CharacterData> advancedAscensionDemons = new Il2CppReferenceArray<CharacterData>(advancedAscension.demons.Length + 1);
-        advancedAscensionDemons = advancedAscension.demons;
-        advancedAscensionDemons[advancedAscensionDemons.Length - 1] = shroud;
-        advancedAscension.demons = advancedAscensionDemons;
-        Il2CppReferenceArray<CharacterData> advancedAscensionStartingDemons = new Il2CppReferenceArray<CharacterData>(advancedAscension.startingDemons.Length + 1);
-        advancedAscensionStartingDemons = advancedAscension.startingDemons;
-        advancedAscensionStartingDemons[advancedAscensionStartingDemons.Length - 1] = shroud;
-        advancedAscension.startingDemons = advancedAscensionStartingDemons;
-        Il2CppReferenceArray<CustomScriptData> advancedAscensionScriptsData = new Il2CppReferenceArray<CustomScriptData>(advancedAscension.possibleScriptsData.Length + 1);
-        advancedAscensionScriptsData = advancedAscension.possibleScriptsData;
-        advancedAscensionScriptsData[advancedAscensionScriptsData.Length - 1] = shroudScriptData;
-        advancedAscension.possibleScriptsData = advancedAscensionScriptsData;
-
-        foreach (CustomScriptData scriptData in advancedAscension.possibleScriptsData)
-        {
-            ScriptInfo script = scriptData.scriptInfo;
-
-            addRole(script.startingTownsfolks, auditor);
-            // addRole(script.startingDemons, shroud);
-            addRole(script.startingOutsiders, saboteur);
-        }
+        GameData gameData = ProjectContext.Instance.gameData;
+        CharacterRegistry.RegisterAll(gameData);
 
         GameplayEvents.OnCharacterRevealed += new Action<Character>(OnCharacterRevealed);
+        OnDeckShuffled += new Action(OnRoundStart);
+        GameplayEvents.OnCharacterKilled += new Action<Character>(OnCharacterKilled);
     }
 
-    public void addRole(Il2CppSystem.Collections.Generic.List<CharacterData> list, CharacterData data)
+    private void OnRoundStart()
     {
-        if (list.Contains(data))
-        {
-            return;
-        }
-        list.Add(data);
-    }
-
-    private void OnCharacterRevealed(Character revealed)
-    {
-
-        CharacterData trueChar = revealed.dataRef;
-        CharacterData bluffChar = revealed.bluff;
-
+        MelonLogger.Msg("NEW GAME=================================");
+        // ensure flag variables are reset
+        hasSabo = false;
+        canSabo = false;
+        shroudCanKill = false;
         Il2CppSystem.Collections.Generic.List<Character> allChars = new Il2CppSystem.Collections.Generic.List<Character>(Gameplay.CurrentCharacters.Pointer);
 
-        bool shroudIsAlive = false;
-        bool canSabotage = false;
         for (int i = 0; i < allChars.Count; i++)
         {
-            if (allChars[i].dataRef.characterId == "shroud_rdm" && allChars[i].state != ECharacterState.Dead)
+            CharacterData trueChar = allChars[i].dataRef;
+            MelonLogger.Msg($"{allChars[i].id}: {allChars[i].dataRef.characterId}");
+            switch (trueChar.characterId)
             {
-                shroudIsAlive = true;
+                case "Shroud_rdm":
+                    shroudCanKill = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+    }
+
+    private void OnCharacterKilled(Character deadChar)
+    {
+        if (deadChar.dataRef.characterId == "Shroud_rdm")
+        {
+            shroudCanKill = false;
+        }
+
+    }
+
+    private void OnCharacterRevealed(Character revealedChar)
+    {
+
+        CharacterData trueChar = revealedChar.dataRef;
+        canSabo = true;
+        // shroudCanKill = true;
+
+        switch (trueChar.characterId)
+        {
+            case "Sabo_rdm":
+                if (!hasSabo)
+                {
+                    canSabo = true;
+                    hasSabo = false;
+                }
                 break;
-            } else if (trueChar.characterId == "sabo_rdm" && allChars[i].state == ECharacterState.Alive)
-            {
-                canSabotage = true;
-            }
-
+            default: break;
         }
 
-        if (canSabotage && (trueChar.picking || (bluffChar != null && bluffChar.picking))) {
-            trueChar.picking = false;
-            if (bluffChar != null)
-            {
-                bluffChar.picking = false;
-            }
-            revealed.Kill();
+        CharacterData bluffChar = revealedChar.bluff;
+        bool criteria = trueChar.picking || (bluffChar != null && bluffChar.picking);
+        if (canSabo && true)
+        {
+            revealedChar.Kill();
+
+            canSabo = false;
         }
 
-        if (shroudIsAlive)
+        if (shroudCanKill)
         {
             PlayerController.PlayerInfo.health.Damage(1);
-            if (PlayerController.PlayerInfo.health.value.GetValue() <= 0)
-            {
-                // kill revealed character to force player to die
-                trueChar.picking = false;
-                if (bluffChar != null)
-                {
-                    trueChar.picking = false;
-                }
-                revealed.Kill();
-            }
         }
 
     }
