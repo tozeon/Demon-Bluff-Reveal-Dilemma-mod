@@ -1,38 +1,28 @@
-﻿
 using Il2Cpp;
 using Il2CppInterop.Runtime.Injection;
-using Il2CppInterop.Runtime.InteropTypes;
 
 using MelonLoader;
 
 namespace RevealDilemmaMod;
 
 [RegisterTypeInIl2Cpp]
-public class Shroud : Demon
+public class Martyr : Minion  
 {
 
-    public Shroud() : base(ClassInjector.DerivedConstructorPointer<Shroud>())
+    public Martyr() : base(ClassInjector.DerivedConstructorPointer<Martyr>())
     {
         ClassInjector.DerivedConstructorBody(this);
-
-    }
-
-    public Shroud(IntPtr ptr) : base(ptr)
-    {
-
     }
 
     public override void Act(ETriggerPhase trigger, Character charRef)
     {
 
-        if (trigger == ETriggerPhase.Start)
-            charRef.statuses.AddStatus(ECharacterStatus.UnkillableByDemon, charRef);
-
+        MelonLogger.Msg("Doing stuff");
     }
 
     public override CharacterData GetBluffIfAble(Character charRef)
     {
-        CharacterData bluff = Characters.Instance.GetRandomUniqueVillagerBluff();
+        CharacterData bluff = Characters.Instance.GetRandomDuplicateBluff();
         Gameplay.Instance.AddScriptCharacterIfAble(bluff.type, bluff);
         return bluff;
     }

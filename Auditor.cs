@@ -17,17 +17,6 @@ public class Auditor : Role
         ClassInjector.DerivedConstructorBody((Il2CppObjectBase)this);
 
     }
-
-    public Auditor(IntPtr ptr) : base(ptr)
-    {
-
-    }
-
-    public override string Description
-    {
-        get => "[Pick 2 characters. Heal 2 for each Villager you selected.";
-    }
-
     public override void Act(ETriggerPhase trigger, Character charRef)
     {
         if (trigger != ETriggerPhase.Day) return;

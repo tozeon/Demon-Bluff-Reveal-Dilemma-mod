@@ -7,16 +7,20 @@ namespace RevealDilemmaMod;
 
 public readonly struct CharacterSet
 {
-    public CharacterSet(CharacterData saboteur, CharacterData shroud, CharacterData auditor)
+    public CharacterSet(CharacterData saboteur, CharacterData shroud, CharacterData auditor, CharacterData martyr, CharacterData ambusher)
     {
         Saboteur = saboteur;
         Shroud = shroud;
         Auditor = auditor;
+        Martyr = martyr; 
+        Ambusher = ambusher;
     }
 
     public CharacterData Saboteur { get; }
     public CharacterData Shroud { get; }
     public CharacterData Auditor { get; }
+    public CharacterData Martyr { get; }
+    public CharacterData Ambusher {get;}
 }
 
 public static class CharacterRegistry
@@ -32,6 +36,8 @@ public static class CharacterRegistry
         ClassInjector.RegisterTypeInIl2Cpp<Saboteur>();
         ClassInjector.RegisterTypeInIl2Cpp<Shroud>();
         ClassInjector.RegisterTypeInIl2Cpp<Auditor>();
+        ClassInjector.RegisterTypeInIl2Cpp<Martyr>();
+        ClassInjector.RegisterTypeInIl2Cpp<Ambusher>();
     }
 
     private static CharacterSet Register(GameData gameData)
@@ -58,12 +64,49 @@ public static class CharacterRegistry
         //     }
         // }
 
+        CharacterData martyr = new CharacterData();
+        martyr.role = new Martyr();
+        martyr.name = "Martyr";
+        martyr.description = "When you execute me and there are other evils alive, I deal 2 damage to you. \n\nI Lie and Disguise.";
+        martyr.flavorText = "\"BOOM!\"";
+        martyr.hints = "Kill me last!";
+        martyr.ifLies = "";
+        martyr.picking = false;
+        martyr.startingAlignment = EAlignment.Evil;
+        martyr.type = ECharacterType.Minion;
+        martyr.abilityUsage = EAbilityUsage.Once;
+        martyr.bluffable = false;
+        martyr.characterId = "Martyr_rdm";
+        martyr.artBgColor = new Color(1f, 0f, 0f);
+        martyr.cardBgColor = new Color(0.0941f, 0.0431f, 0.0431f);
+        martyr.cardBorderColor = new Color(0.8208f, 0f, 0.0241f);
+        martyr.color = new Color(0.8491f, 0.4555f, 0f);
+
+        CharacterData ambusher = new CharacterData();
+        ambusher.role = new Ambusher();
+        ambusher.name = "Ambusher";
+        ambusher.description = "When you reveal the last unrevealed character, I deal 3 damage to you. \n\nI Lie and Disguise.";
+        ambusher.flavorText = "\"There was no hiding from the Ambusher.\"";
+        ambusher.hints = "I do not deal damage if I am dead.";
+        ambusher.ifLies = "";
+        ambusher.picking = false;
+        ambusher.startingAlignment = EAlignment.Evil;
+        ambusher.type = ECharacterType.Minion;
+        ambusher.abilityUsage = EAbilityUsage.Once;
+        ambusher.bluffable = false;
+        ambusher.characterId = "Ambush_rdm";
+        ambusher.artBgColor = new Color(1f, 0f, 0f);
+        ambusher.cardBgColor = new Color(0.0941f, 0.0431f, 0.0431f);
+        ambusher.cardBorderColor = new Color(0.8208f, 0f, 0.0241f);
+        ambusher.color = new Color(0.8491f, 0.4555f, 0f);
+
+
         CharacterData saboteur = new CharacterData();
         saboteur.role = new Saboteur();
         saboteur.name = "Saboteur";
-        saboteur.description = "When you reveal me, I kill the next character you reveal who has an ability.";
+        saboteur.description = "When you reveal me, I kill the next character you reveal who has an ability. I deal 2 damage if they were good.";
         saboteur.flavorText = "\"Looking for any excuse to achieve their goals.\"";
-        saboteur.hints = "I can still kill after I die.";
+        saboteur.hints = "I can still kill even if I die.";
         saboteur.ifLies = "I don't kill or deal damage to you.";
         saboteur.picking = false;
         saboteur.startingAlignment = EAlignment.Good;
@@ -118,8 +161,10 @@ public static class CharacterRegistry
         allCharacters.Add(shroud);
         allCharacters.Add(saboteur);
         allCharacters.Add(auditor);
+        allCharacters.Add(martyr);
+        allCharacters.Add(ambusher);
 
-        return new CharacterSet(saboteur, shroud, auditor);
+        return new CharacterSet(saboteur, shroud, auditor, martyr, ambusher);
     }
 
     private static void ConfigureAscensions(GameData gameData, CharacterSet characters)
@@ -127,6 +172,8 @@ public static class CharacterRegistry
         CharacterData saboteur = characters.Saboteur;
         CharacterData shroud = characters.Shroud;
         CharacterData auditor = characters.Auditor;
+        CharacterData martyr = characters.Martyr;
+        CharacterData ambusher = characters.Ambusher;
 
         AscensionsData advancedAscension = gameData.advancedAscension;
 
@@ -185,6 +232,8 @@ public static class CharacterRegistry
             AddRole(script.startingTownsfolks, auditor);
             // AddRole(script.startingDemons, shroud);
             AddRole(script.startingOutsiders, saboteur);
+            AddRole(script.startingMinions, martyr);
+            AddRole(script.startingMinions, ambusher);
         }
     }
 

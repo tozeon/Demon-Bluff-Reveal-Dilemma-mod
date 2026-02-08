@@ -334,6 +334,8 @@
 		<Compile Include="CharacterRegistry.cs" />
 		<Compile Include="Saboteur.cs" />
 		<Compile Include="Shroud.cs" />
+		<Compile Include="Martyr.cs" />
+		<Compile Include="Ambusher.cs" />
 		<Compile Include="Core.cs" />
 	</ItemGroup>
 	
