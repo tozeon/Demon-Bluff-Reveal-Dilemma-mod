@@ -91,7 +91,7 @@ namespace RevealDilemmaMod
 
                         if (character.alignment == EAlignment.Evil && character.state != ECharacterState.Dead && character.dataRef.characterId != "Martyr_rdm")
                         {
-                            PlayerController.PlayerInfo.health.Damage(3);
+                            PlayerController.PlayerInfo.health.Damage(2);
                             break;
                         }
                     }
