@@ -8,8 +8,10 @@ This is a [Demon Bluff](https://store.steampowered.com/app/3522600/Demon_Bluff/)
 
 ### Saboteur
     - Good Outcast
-    - Deals 4 damage when revealed
-    - Gives random info
+    - When revealed, kills the next character you reveal who has an ability
+      - if there are no cards with any abilities, Saboteur does nothing
+      - if the revealed card was good and died, Saboteur deals 2 damage to you
+    - Can be disguised as
 
 ### Shroud 
     - Evil Demon
