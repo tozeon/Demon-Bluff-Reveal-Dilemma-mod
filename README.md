@@ -23,9 +23,15 @@ This is a [Demon Bluff](https://store.steampowered.com/app/3522600/Demon_Bluff/)
     - Pick 2 characters. Heal 2 for each villager (not including themself) selected.
     - Registers as a random outcast.
 
-### Martyr (WIP)
+### Martyr
+    - Evil Minion
+    - Lies and Disguises
+    - Deals 2 damage after execution while there is at least 1 other evil alive
 
-Evil Minion.
+### Ambusher
+    - Evil Minion
+    - Lies and Disguises
+    - Deals 3 damage after you reveal all cards while alive
 
 ## Installation
 
