@@ -44,4 +44,7 @@ You will also need to game installed, of course.
 
 **Note:** This game does not add any sprites, so you may want to add your own.
 
+## Known issues:
 
+Sabo's ability does not work when a truthful character disguises as it
+Martyr's ability triggers when they are killed by a means other than player execution
